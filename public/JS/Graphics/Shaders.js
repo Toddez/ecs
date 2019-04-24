@@ -1,41 +1,31 @@
 class Shader {
 	constructor() {
-		this.flush();
+		this.data = new Array();
 	}
 
-	flush() {
-		this.positions = [];
-		this.indices = [];
-	}
-	
 	render() {
 		console.warn('Default shader has no render function defined, override render()');
 	}
 
-	static NULL = -1;
-	static shaderStack = [];
+	static shaderStack = {};
+	static addShader(id, shader) {
+		Shader.shaderStack[id] = shader;
+	}
 
-	static addShader(shader) {
-		Shader.shaderStack.push(shader);
+	static getShader(id) {
+		return Shader.shaderStack[id];
 	}
 
 	static render() {
-		for (let i = 0; i < Shader.shaderStack.length; i++) {
+		for (let i in Shader.shaderStack) { 
 			Shader.shaderStack[i].render();
-			Shader.shaderStack[i].flush();
+			Shader.shaderStack[i].data = new Array();
 		}
 	}
 }
 
 class DebugShader extends Shader {
-	flush() {
-		super.flush();
-
-		this.textureCoordinates = [];
-		this.vertexNormals = [];
-	}
-
 	render() {
-
+		
 	}
 }

@@ -1,12 +1,16 @@
 class Entity {
 	constructor(position, rotation, scale) {
+		this.shader = undefined;
+
 		this.children = new Array();
 		this.shaderData = { positions: [0], indices: [0] };
 		this.position = position ? position : new Vector3(0, 0, 0);
 		this.rotation = rotation ? rotation : new Vector3(0, 0, 0);
 		this.scale = scale ? scale : new Vector3(1, 1, 1);
+	}
 
-		this.shader = Shader.NULL;
+	setShader(id) {
+		this.shader = Shader.getShader(id);
 	}
 }
 
@@ -51,7 +55,7 @@ class TransformStack {
 		let value = Matrix4.identity();
 
 		for (let i = 0; i < this.matrices.length; i++) {
-			value = Matrix4.multiply(value, this.matrices.length[i]);
+			value = Matrix4.multiply(value, this.matrices[i]);
 		}
 
 		return value;
@@ -78,7 +82,10 @@ class Scene {
 		this.transformStack.push(Matrix4.rotation(current.rotation));
 		this.transformStack.push(Matrix4.translation(current.position));
 
-		// Add vertices / indicies
+		if (current.shader)
+			current.shader.data.push({ data: current.shaderData, modelView: this.transformStack.eval() });
+		else
+			console.warn('No shader defined for entity: ', current);
 
 		for (let i = 0; i < current.children.length; i++)
 			this.recursive(current.children[i]);

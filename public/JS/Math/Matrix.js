@@ -10,19 +10,20 @@ class Matrix4 {
 	}
 
 	static translation(v) {
-		return [16];
+		return Matrix4.identity(1);
 	}
 
 	static rotation(v) {
-		return [16];
+		return Matrix4.identity(1);
 	}
 
 	static scaling(v) {
-		return [16];
+		return Matrix4.identity(1);
 	}
 
 	static multiply(a, b) {
 		let m = new Array(16);
+		
 		for (let r = 0; r < 4; ++r) {
 			for (let c = 0; c < 4; ++c) {
 				m[r + c * 4] = 0;

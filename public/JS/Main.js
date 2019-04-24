@@ -8,10 +8,12 @@ window.addEventListener('load', () => {
 	app.onStart = () => {
 		canvas.fullscreen(true);
 
-		let testShader = new DebugShader();
-		Shader.addShader(testShader)
+		let cubeShader = new DebugShader();
+		Shader.addShader('cube', cubeShader);
 
 		let cube = new Cube(new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(1, 1, 1));
+		cube.setShader('cube');
+
 		scene.children.push(cube);
 	};
 
