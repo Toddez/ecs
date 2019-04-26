@@ -11,33 +11,34 @@ window.addEventListener('load', () => {
   const scene = new Scene();
   Shader.init(canvas);
 
-  let cube;
-  let cube2;
+  let parent;
 
   app.onStart = () => {
     canvas.fullscreen(true);
 
-    cube = new Cube(
-      new Vector3(0, 0, -5),
+    parent = new Cube(
+      new Vector3(0, 0, -1),
       new Vector3(0, 0, 0),
-      new Vector3(1, 1, 1)
+      new Vector3(0.01, 0.01, 0.01)
     );
-    scene.children.push(cube);
+    scene.children.push(parent);
 
-    cube2 = new Cube(
-      new Vector3(0, 2, 0),
-      new Vector3(0, 0, 0),
-      new Vector3(0.2, 2, 0.2)
-    );
-    cube.children.push(cube2);
+    let last = parent;
+    for (let i = 0; i < 100; i += 1) {
+      const newC = new Cube(
+        new Vector3(0, 2 * Math.pow(0.999, i + 1), 0),
+        new Vector3(Math.sin(i / 10) * 10, Math.cos(i / 10) * 10, 0),
+        new Vector3(0.999, 0.999, 0.999)
+      );
+      last.children.push(newC);
+      last = newC;
+    }
   };
 
   app.onRender = deltaTime => {
-    cube.rotation.x += deltaTime * 2;
-    cube.rotation.y += deltaTime * 10;
-    cube.rotation.z += deltaTime * 5;
-
-    cube2.rotation.y += deltaTime * 50;
+    parent.rotation.x += deltaTime * 2;
+    parent.rotation.y += deltaTime * 10;
+    parent.rotation.z += deltaTime * 5;
 
     scene.render();
     Shader.render();

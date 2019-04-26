@@ -64,7 +64,7 @@ Shader.create('pbr', pbrVertex, pbrFragment, function(gl, program, data) {
     textureCoordinatesData = textureCoordinatesData.concat(textureCoordinates);
     vertexNormalsData = vertexNormalsData.concat(vertexNormals);
 
-    indexOffset += positionsData.length / 3;
+    indexOffset = newIndicies[newIndicies.length - 1] + 1;
   }
 
   const positionsBuffer = gl.createBuffer();
