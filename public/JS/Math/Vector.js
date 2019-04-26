@@ -17,10 +17,6 @@ class Vector3 {
 		this.y = y;
 		this.z = z;
 	}
-
-	static mulM4(v, m) {
-		return v;
-	}
 }
 
 class Vector4 {

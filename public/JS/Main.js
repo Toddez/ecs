@@ -9,6 +9,8 @@ window.addEventListener('load', () => {
 	let lastUpdate = Date.now();
 
 	let deltaRender, deltaUpdate;
+	
+	let cube;
 
 	app.onStart = () => {
 		canvas.fullscreen(true);
@@ -18,11 +20,10 @@ window.addEventListener('load', () => {
 			const vertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
 			const vertexNormal = gl.getAttribLocation(program, 'aVertexNormal');
 			const textureCoord = gl.getAttribLocation(program, 'aTextureCoord');
-			const modelViewMatrix = gl.getAttribLocation(program, 'uModelViewMatrix');
-		  
+
+			const modelViewMatrix = gl.getUniformLocation(program, 'uModelViewMatrix');
 			const projectionMatrix = gl.getUniformLocation(program, 'uProjectionMatrix');
 
-			let modelViewData = [];
 			let indicesData = [];
 			let positionsData = [];
 			let textureCoordinatesData = [];
@@ -32,27 +33,113 @@ window.addEventListener('load', () => {
 			for (let i = 0; i < data.length; i++) {
 				const modelView = data[i].modelView;
 				let indices = data[i].data.indices;
-				const positions = data[i].data.positions;
+				let positions = data[i].data.positions;
 				const textureCoordinates = data[i].data.textureCoordinates;
 				const vertexNormals = data[i].data.vertexNormals;
 
 				indices.map((v) => { return v + indexOffset; });
+				positions.map((v, i) => { 
+					return v;
+					// Multiply by transformation stack model view
+				});
 
-				modelViewData = modelViewData.concat(modelView);
 				indicesData = indicesData.concat(indices);
 				positionsData = positionsData.concat(positions);
 				textureCoordinatesData = textureCoordinatesData.concat(textureCoordinates);
-				vertexNormalsData = vertexNormalsData.concat(vertexNormalsData);
+				vertexNormalsData = vertexNormalsData.concat(vertexNormals);
 
-				indexOffset += indices.length;				
+				indexOffset += indices.length;
 			}
 
-			const modelViewBuffer = gl.createBuffer();
-			gl.bindBuffer(gl.ARRAY_BUFFER, modelViewBuffer);
-			gl.bufferData()
+			const positionsBuffer = gl.createBuffer();
+			gl.bindBuffer(gl.ARRAY_BUFFER, positionsBuffer);
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positionsData), gl.STATIC_DRAW);
+
+			const textureCoordinatesBuffer = gl.createBuffer();
+			gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordinatesBuffer);
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinatesData), gl.STATIC_DRAW);
+
+			const vertexNormalBuffer = gl.createBuffer();
+			gl.bindBuffer(gl.ARRAY_BUFFER, vertexNormalBuffer);
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexNormalsData), gl.STATIC_DRAW);
+
+			const indexBuffer = gl.createBuffer();
+			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+			gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indicesData), gl.STATIC_DRAW);
+
+			{
+				const numComponents = 3;
+				const type = gl.FLOAT;
+				const normalize = false;
+				const stride = 0;
+				const offset = 0;
+				gl.bindBuffer(gl.ARRAY_BUFFER, positionsBuffer);
+				gl.vertexAttribPointer(
+					vertexPosition,
+					numComponents,
+					type,
+					normalize,
+					stride,
+					offset);
+				gl.enableVertexAttribArray(vertexPosition);
+			}
+
+			{
+				const numComponents = 2;
+				const type = gl.FLOAT;
+				const normalize = false;
+				const stride = 0;
+				const offset = 0;
+				gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordinatesBuffer);
+				gl.vertexAttribPointer(
+					textureCoord,
+					numComponents,
+					type,
+					normalize,
+					stride,
+					offset);
+				gl.enableVertexAttribArray(textureCoord);
+			}
+
+			{
+				const numComponents = 3;
+				const type = gl.FLOAT;
+				const normalize = false;
+				const stride = 0;
+				const offset = 0;
+				gl.bindBuffer(gl.ARRAY_BUFFER, vertexNormalBuffer);
+				gl.vertexAttribPointer(
+					vertexNormal,
+					numComponents,
+					type,
+					normalize,
+					stride,
+					offset);
+				gl.enableVertexAttribArray(vertexNormal);
+			}
+
+			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+
+			gl.useProgram(program);
+
+			const projection = Matrix4.projection(45, (Shader.canvas.dimensions.x - Shader.canvas.margin.x) / (Shader.canvas.dimensions.y - Shader.canvas.margin.y), 0.1, 100);
+			gl.uniformMatrix4fv(
+				projectionMatrix,
+				false,
+				projection);
+			
+			const modelViewData = Matrix4.identity(1);
+
+			gl.uniformMatrix4fv(
+				modelViewMatrix,
+				false,
+				modelViewData
+			);
+			
+			gl.drawElements(gl.TRIANGLES, indicesData.length, gl.UNSIGNED_SHORT, 0);
 		});
 
-		let cube = new Cube(new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(1, 1, 1));
+		cube = new Cube(new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(1, 1, 1));
 		scene.children.push(cube);
 	};
 
@@ -69,6 +156,10 @@ window.addEventListener('load', () => {
 		deltaRender = Date.now() - lastRender;
 		canvas.context2d.fillText('render time: ' + deltaRender.toString() + 'ms', 10, 30);
 		canvas.context2d.fillText('update time: ' + deltaUpdate.toString() + 'ms', 10, 50);
+
+		//cube.rotation.x += deltaTime * 7;
+		//cube.rotation.y += deltaTime * 10;
+		//cube.rotation.z += deltaTime * 3;
 	};
 
 	app.onUpdate = (deltaTime) => {
@@ -96,12 +187,33 @@ class Cube extends Entity {
 }
 
 const pbrVertex = `
-	void main() {
+attribute vec3 aVertexPosition;
+attribute vec3 aVertexNormal;
+attribute vec2 aTextureCoord;
 
-	}
+uniform mat4 uModelViewMatrix;
+uniform mat4 uProjectionMatrix;
+
+varying highp vec2 vTextureCoord;
+varying highp vec3 vLighting;
+
+void main(void) {
+  gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aVertexPosition, 1.0);
+  vTextureCoord = aTextureCoord;
+
+  highp vec3 ambientLight = vec3(0.3, 0.3, 0.3);
+  highp vec3 directionalLightColor = vec3(1, 1, 1);
+  highp vec3 directionalVector = normalize(vec3(0.85, 0.8, 0.75));
+  highp vec4 transformedNormal = vec4(aVertexNormal, 1.0);
+  highp float directional = max(dot(transformedNormal.xyz, directionalVector), 0.0);
+  vLighting = ambientLight + (directionalLightColor * directional);
+}
 `;
 const pbrFragment = `
-	void main() {
+varying highp vec2 vTextureCoord;
+varying highp vec3 vLighting;
 
-	}
+void main(void) {;
+  gl_FragColor = vec4(vec3(vTextureCoord.x, vTextureCoord.y, 1.0).xyz * vLighting, 1.0);
+}
 `;

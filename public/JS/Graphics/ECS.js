@@ -50,14 +50,17 @@ class Scene {
 	}
 
 	render() {
+		this.transformStack = new TransformStack();
 		for (let i = 0; i < this.children.length; i++)
 			this.recursive(this.children[i]);
 	}
 
 	recursive(current) {
-		this.transformStack.push(Matrix4.scaling(current.scale));
-		this.transformStack.push(Matrix4.rotation(current.rotation));
 		this.transformStack.push(Matrix4.translation(current.position));
+		this.transformStack.push(Matrix4.rotation(current.rotation.x, new Vector3(1, 0, 0)));
+		this.transformStack.push(Matrix4.rotation(current.rotation.y, new Vector3(0, 1, 0)));
+		this.transformStack.push(Matrix4.rotation(current.rotation.z, new Vector3(0, 0, 1)));
+		this.transformStack.push(Matrix4.scaling(current.scale));
 
 		if (current.shader)
 			current.shader.data.push({ data: current.shaderData, modelView: this.transformStack.eval() });

@@ -67,9 +67,6 @@ class Shader {
 			let shader = Shader.shaderStack[i];
 			
 			if (shader.render) {
-
-				gl.useProgram(shader.program);
-
 				shader.render(gl, shader.program, shader.data);
 			} else {
 				console.warn('No render method defined for shader');
