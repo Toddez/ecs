@@ -70,7 +70,7 @@ class Shader {
 
 				gl.useProgram(shader.program);
 
-				shader.render(shader.data);
+				shader.render(gl, shader.program, shader.data);
 			} else {
 				console.warn('No render method defined for shader');
 			}

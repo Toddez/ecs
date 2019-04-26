@@ -13,10 +13,43 @@ window.addEventListener('load', () => {
 	app.onStart = () => {
 		canvas.fullscreen(true);
 
-		const pbr = new Shader('pbr', pbrVertex, pbrFragment, function (data) {
-			const gl = Shader.gl;
+		const pbr = new Shader('pbr', pbrVertex, pbrFragment, function (gl, program, data) {
 
+			const vertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
+			const vertexNormal = gl.getAttribLocation(program, 'aVertexNormal');
+			const textureCoord = gl.getAttribLocation(program, 'aTextureCoord');
+			const modelViewMatrix = gl.getAttribLocation(program, 'uModelViewMatrix');
+		  
+			const projectionMatrix = gl.getUniformLocation(program, 'uProjectionMatrix');
 
+			let modelViewData = [];
+			let indicesData = [];
+			let positionsData = [];
+			let textureCoordinatesData = [];
+			let vertexNormalsData = [];
+
+			let indexOffset = 0;
+			for (let i = 0; i < data.length; i++) {
+				const modelView = data[i].modelView;
+				let indices = data[i].data.indices;
+				const positions = data[i].data.positions;
+				const textureCoordinates = data[i].data.textureCoordinates;
+				const vertexNormals = data[i].data.vertexNormals;
+
+				indices.map((v) => { return v + indexOffset; });
+
+				modelViewData = modelViewData.concat(modelView);
+				indicesData = indicesData.concat(indices);
+				positionsData = positionsData.concat(positions);
+				textureCoordinatesData = textureCoordinatesData.concat(textureCoordinates);
+				vertexNormalsData = vertexNormalsData.concat(vertexNormalsData);
+
+				indexOffset += indices.length;				
+			}
+
+			const modelViewBuffer = gl.createBuffer();
+			gl.bindBuffer(gl.ARRAY_BUFFER, modelViewBuffer);
+			gl.bufferData()
 		});
 
 		let cube = new Cube(new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(1, 1, 1));
@@ -24,7 +57,6 @@ window.addEventListener('load', () => {
 	};
 
 	app.onRender = (deltaTime) => {
-		deltaRender = Date.now() - lastRender;
 		lastRender = Date.now();
 
 		scene.render();
@@ -33,13 +65,15 @@ window.addEventListener('load', () => {
 		canvas.context2d.clearRect(0, 0, canvas.dimensions.x - canvas.margin.x, canvas.dimensions.y - canvas.margin.y);
 		canvas.context2d.font = "25px Arial";
 		canvas.context2d.fillStyle = '#fff';
-		canvas.context2d.fillText(deltaRender.toString(), 10, 30);
-		canvas.context2d.fillText(deltaUpdate.toString(), 10, 50);
+
+		deltaRender = Date.now() - lastRender;
+		canvas.context2d.fillText('render time: ' + deltaRender.toString() + 'ms', 10, 30);
+		canvas.context2d.fillText('update time: ' + deltaUpdate.toString() + 'ms', 10, 50);
 	};
 
 	app.onUpdate = (deltaTime) => {
-		deltaUpdate = Date.now() - lastUpdate;
 		lastUpdate = Date.now();
+		deltaUpdate = Date.now() - lastUpdate;
 	};
 
 	app.start();
