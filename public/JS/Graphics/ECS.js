@@ -1,32 +1,13 @@
 class Entity {
-	constructor(position, rotation, scale) {
-		this.shader = undefined;
-
+	constructor(position, rotation, scale, shader) {
 		this.children = new Array();
-		this.shaderData = { positions: [0], indices: [0] };
+
 		this.position = position ? position : new Vector3(0, 0, 0);
 		this.rotation = rotation ? rotation : new Vector3(0, 0, 0);
 		this.scale = scale ? scale : new Vector3(1, 1, 1);
-	}
 
-	setShader(id) {
-		this.shader = Shader.getShader(id);
-	}
-}
-
-class Cube extends Entity {
-	constructor(position, rotation, scale) {
-		super(position, rotation, scale);
-
-		const positions = [-1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, -1.0];
-
-		const indices = [0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11, 12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21, 22, 20, 22, 23];
-
-		const textureCoordinates = [0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0];
-
-		const vertexNormals = [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0];
-
-		this.shaderData = { positions, indices, textureCoordinates, vertexNormals };
+		this.shader = shader;
+		this.shaderData = { positions: [0], indices: [0] };
 	}
 }
 
@@ -68,10 +49,6 @@ class Scene {
 		this.children = new Array();
 	}
 
-	update() {
-
-	}
-
 	render() {
 		for (let i = 0; i < this.children.length; i++)
 			this.recursive(this.children[i]);
@@ -85,7 +62,7 @@ class Scene {
 		if (current.shader)
 			current.shader.data.push({ data: current.shaderData, modelView: this.transformStack.eval() });
 		else
-			console.warn('No shader defined for entity: ', current);
+			console.warn('No shader defined for entity');
 
 		for (let i = 0; i < current.children.length; i++)
 			this.recursive(current.children[i]);
