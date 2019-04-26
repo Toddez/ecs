@@ -10,8 +10,14 @@
     "type": "git",
     "url": "git+https://github.com/Toddez/ecs.git"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Toddez/ecs/issues"
+  },
+  "homepage": "https://github.com/Toddez/ecs#readme",
   "dependencies": {
-    "ejs": "^2.6.1",
     "express": "^4.16.4"
   }
 }
