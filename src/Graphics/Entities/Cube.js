@@ -1,5 +1,6 @@
 import { Entity } from '../ECS';
-import { Shader } from '../Shaders';
+import { Shader } from '../Shader';
+import {} from '../Shaders/PBR';
 
 export class Cube extends Entity {
   constructor(position, rotation, scale) {

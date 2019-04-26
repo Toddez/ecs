@@ -1,4 +1,4 @@
-import { Shader } from '../Shaders';
+import { Shader } from '../Shader';
 import { Matrix4 } from '../../Math/Matrix';
 
 const pbrVertex = `
@@ -34,11 +34,7 @@ const pbrFragment = `
 	}
 `;
 
-export const pbr = new Shader('pbr', pbrVertex, pbrFragment, function(
-  gl,
-  program,
-  data
-) {
+Shader.create('pbr', pbrVertex, pbrFragment, function(gl, program, data) {
   const vertexPosition = gl.getAttribLocation(program, 'aVertexPosition');
   const vertexNormal = gl.getAttribLocation(program, 'aVertexNormal');
   const textureCoord = gl.getAttribLocation(program, 'aTextureCoord');
@@ -53,22 +49,22 @@ export const pbr = new Shader('pbr', pbrVertex, pbrFragment, function(
 
   let indexOffset = 0;
   for (let i = 0; i < data.length; i += 1) {
-    // const { modelView } = data[i];
-    const { indices } = data[i].data;
-    const { positions } = data[i].data;
-    const { textureCoordinates } = data[i].data;
-    const { vertexNormals } = data[i].data;
+    const { indices } = data[i];
+    const { positions } = data[i];
+    const { textureCoordinates } = data[i];
+    const { vertexNormals } = data[i];
 
+    const newIndicies = [];
     for (let j = 0; j < indices.length; j += 1) {
-      indices[i] += indexOffset;
+      newIndicies[j] = indices[j] + indexOffset;
     }
 
-    indicesData = indicesData.concat(indices);
+    indicesData = indicesData.concat(newIndicies);
     positionsData = positionsData.concat(positions);
     textureCoordinatesData = textureCoordinatesData.concat(textureCoordinates);
     vertexNormalsData = vertexNormalsData.concat(vertexNormals);
 
-    indexOffset += indices.length;
+    indexOffset += positionsData.length / 3;
   }
 
   const positionsBuffer = gl.createBuffer();

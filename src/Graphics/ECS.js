@@ -21,7 +21,6 @@ class TransformStack {
 
   push(m) {
     if (!m) return;
-
     this.matrices.push(m);
   }
 
@@ -34,7 +33,6 @@ class TransformStack {
 
   eval() {
     let value = Matrix4.identity();
-
     for (let i = 0; i < this.matrices.length; i += 1) {
       value = Matrix4.multiply(value, this.matrices[i]);
     }
@@ -68,13 +66,52 @@ export class Scene {
     );
     this.transformStack.push(Matrix4.scaling(current.scale));
 
-    if (current.shader)
-      current.shader.data.push({
-        data: current.shaderData,
-        modelView: this.transformStack.eval(),
-      });
-    else console.warn('No shader defined for entity');
+    if (current.shader) {
+      const matrix = this.transformStack.eval();
 
+      const newPositions = [];
+      for (let i = 0; i < current.shaderData.positions.length; i += 1) {
+        let value = 0;
+        if (i % 3 === 0) {
+          value = Matrix4.multiplyVector(
+            matrix,
+            new Vector3(
+              current.shaderData.positions[i],
+              current.shaderData.positions[i + 1],
+              current.shaderData.positions[i + 2]
+            )
+          ).x;
+        } else if (i % 3 === 1) {
+          value = Matrix4.multiplyVector(
+            matrix,
+            new Vector3(
+              current.shaderData.positions[i - 1],
+              current.shaderData.positions[i],
+              current.shaderData.positions[i + 1]
+            )
+          ).y;
+        } else {
+          value = Matrix4.multiplyVector(
+            matrix,
+            new Vector3(
+              current.shaderData.positions[i - 2],
+              current.shaderData.positions[i - 1],
+              current.shaderData.positions[i]
+            )
+          ).z;
+        }
+
+        newPositions.push(value);
+      }
+
+      let data = {};
+      data = Object.assign(data, current.shaderData);
+      data.positions = newPositions;
+
+      current.shader.data.push(data);
+    } else {
+      console.warn('No shader defined for entity');
+    }
     for (let i = 0; i < current.children.length; i += 1)
       this.recursive(current.children[i]);
 

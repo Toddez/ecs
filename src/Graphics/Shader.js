@@ -1,13 +1,27 @@
 export class Shader {
   constructor(id, vertex, fragment, render) {
-    this.render = render;
+    this.id = id;
     this.vertex = vertex;
     this.fragment = fragment;
+    this.render = render;
+    this.compiled = false;
+    this.data = [];
+    this.program = null;
+  }
 
-    const { gl } = Shader.canvas;
+  static init(canvas) {
+    Shader.canvas = canvas;
+    Shader.gl = canvas.gl;
+  }
 
+  static create(id, vertexSource, fragmentSource, onRender) {
+    const shader = new Shader(id, vertexSource, fragmentSource, onRender);
+    Shader.addShader(id, shader);
+  }
+
+  compile(gl) {
     const vertexShader = gl.createShader(gl.VERTEX_SHADER);
-    gl.shaderSource(vertexShader, vertex);
+    gl.shaderSource(vertexShader, this.vertex);
     gl.compileShader(vertexShader);
 
     if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
@@ -17,7 +31,7 @@ export class Shader {
     }
 
     const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-    gl.shaderSource(fragmentShader, fragment);
+    gl.shaderSource(fragmentShader, this.fragment);
     gl.compileShader(fragmentShader);
 
     if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
@@ -42,21 +56,23 @@ export class Shader {
     }
 
     this.program = shaderProgram;
-
-    this.data = [];
-    Shader.addShader(id, this);
+    this.compiled = true;
   }
 
   static addShader(id, shader) {
-    Shader.shaderStack[id] = shader;
+    if (!Shader.shaderStack) Shader.shaderStack = [];
+    Shader.shaderStack.push(shader);
   }
 
   static getShader(id) {
-    return Shader.shaderStack[id];
+    for (let i = 0; i < Shader.shaderStack.length; i += 1) {
+      const shader = Shader.shaderStack[i];
+      if (shader.id === id) return shader;
+    }
   }
 
   static render() {
-    const { gl } = Shader.canvas;
+    const { gl } = Shader;
 
     gl.viewport(
       0,
@@ -72,8 +88,8 @@ export class Shader {
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    for (let i = 0; i < Shader.shaderStack.length; i += 1) {
-      const shader = Shader.shaderStack[i];
+    for (const shader of Shader.shaderStack) {
+      if (!shader.compiled) shader.compile(gl);
 
       if (shader.render) shader.render(gl, shader.program, shader.data);
       else console.warn('No render method defined for shader');
@@ -82,5 +98,3 @@ export class Shader {
     }
   }
 }
-
-Shader.shaderStack = {};
