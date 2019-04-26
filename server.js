@@ -3,7 +3,7 @@ global.rootDir = __dirname;
 const express = require('express');
 
 const app = express();
-app.use(express.static(`${global.rootDir}/public`));
+app.use(express.static(`${global.rootDir}/dist`));
 app.set('view engine', 'ejs');
 app.set('views', `${global.rootDir}/views`);
 
