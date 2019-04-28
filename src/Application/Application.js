@@ -13,12 +13,20 @@ export class Application {
     this.renderTime = new Date().getTime() / 1000;
 
     this.startTime = new Date().getTime() / 1000;
+    this.perfTime = new Date().getTime() / 1000;
+
     this.updates = 0;
     this.frames = 0;
+    this.fps = fps;
+    this.ups = ups;
   }
 
   getTime() {
     return new Date().getTime() / 1000 - this.startTime;
+  }
+
+  getPerformance() {
+    return { fps: this.fps, ups: this.ups };
   }
 
   /**
@@ -42,18 +50,27 @@ export class Application {
     const deltaUpdate = newTime - this.updateTime;
     const deltaRender = newTime - this.renderTime;
 
+    if (newTime - this.perfTime >= 1) {
+      this.fps = this.frames / (newTime - this.perfTime);
+      this.ups = this.updates / (newTime - this.perfTime);
+
+      this.frames = 0;
+      this.updates = 0;
+      this.perfTime = newTime;
+    }
+
     if (deltaUpdate >= this.updateTimeStep)
       if (this.onUpdate) {
         this.onUpdate(deltaUpdate);
         this.updates += 1;
-        this.updateTime = newTime;
+        this.updateTime += this.updateTimeStep;
       }
 
     if (deltaRender >= this.renderTimeStep)
       if (this.onRender) {
         this.onRender(deltaRender);
         this.frames += 1;
-        this.renderTime = newTime;
+        this.renderTime += this.renderTimeStep;
       }
 
     window.requestAnimationFrame(() => {

@@ -16,8 +16,8 @@ const pbrVertex = `
 		gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aVertexPosition, 1.0);
 		vTextureCoord = aTextureCoord;
 
-		highp vec3 ambientLight = vec3(0.3, 0.3, 0.3);
-		highp vec3 directionalLightColor = vec3(1, 1, 1);
+		highp vec3 ambientLight = vec3(0.02, 0.02, 0.02);
+		highp vec3 directionalLightColor = vec3(1.0, 1.0, 1.0);
 		highp vec3 directionalVector = normalize(vec3(0.85, 0.8, 0.75));
 		highp vec4 transformedNormal = vec4(aVertexNormal, 1.0);
 		highp float directional = max(dot(transformedNormal.xyz, directionalVector), 0.0);
@@ -30,7 +30,7 @@ const pbrFragment = `
 	varying highp vec3 vLighting;
 
 	void main(void) {;
-		gl_FragColor = vec4(vec3(vTextureCoord.x, vTextureCoord.y, 1.0).xyz * vLighting, 1.0);
+		gl_FragColor = vec4(vec3(1.0, 1.0, 1.0).xyz * vLighting, 1.0);
 	}
 `;
 
@@ -158,7 +158,7 @@ Shader.create('pbr', pbrVertex, pbrFragment, function(gl, program, data) {
   gl.useProgram(program);
 
   const projection = Matrix4.projection(
-    45,
+    60,
     (Shader.canvas.dimensions.x - Shader.canvas.margin.x) /
       (Shader.canvas.dimensions.y - Shader.canvas.margin.y),
     0.1,

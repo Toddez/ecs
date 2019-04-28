@@ -6,7 +6,7 @@ import { Vector2, Vector3 } from './Math/Vector';
 import { Mesh } from './Graphics/Entities/Mesh';
 
 window.addEventListener('load', () => {
-  const app = new Application(60, 60);
+  const app = new Application(60, 100);
   const canvas = new Canvas('main', new Vector2(500, 500));
   const scene = new Scene();
   Shader.init(canvas);
@@ -23,9 +23,9 @@ window.addEventListener('load', () => {
     canvas.fullscreen(true);
 
     mesh = new Mesh(
-      new Vector3(0, -5, -35),
+      new Vector3(0, -1, -3),
       new Vector3(0, 0, 0),
-      new Vector3(1, 1, 1),
+      new Vector3(0.1, 0.1, 0.1),
       'Obj/male.obj'
     );
 
@@ -62,23 +62,31 @@ window.addEventListener('load', () => {
     deltaRender = Date.now() - lastRender;
     canvas.context2d.fillText(`vertices: ${vertices.toString()}`, 10, 30);
     canvas.context2d.fillText(
-      `render time: ${deltaRender.toString()}ms`,
+      `fps: ${parseInt(app.getPerformance().fps)}`,
       10,
       70
     );
     canvas.context2d.fillText(
-      `update time: ${deltaUpdate.toString()}ms`,
+      `render time: ${deltaRender.toString()}ms`,
       10,
       90
+    );
+    canvas.context2d.fillText(
+      `ups: ${parseInt(app.getPerformance().ups)}`,
+      10,
+      130
+    );
+    canvas.context2d.fillText(
+      `update time: ${deltaUpdate.toString()}ms`,
+      10,
+      150
     );
   };
 
   app.onUpdate = deltaTime => {
     lastUpdate = Date.now();
 
-    mesh.rotation.x += deltaTime * 2;
     mesh.rotation.y += deltaTime * 10;
-    mesh.rotation.z += deltaTime * 5;
 
     deltaUpdate = Date.now() - lastUpdate;
   };
