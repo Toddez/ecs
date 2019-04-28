@@ -1,10 +1,9 @@
-import { pseudoRandomBytes } from 'crypto';
 import { Application } from './Application/Application';
 import { Canvas } from './Graphics/Canvas';
 import { Scene } from './Graphics/ECS';
 import { Shader } from './Graphics/Shader';
 import { Vector2, Vector3 } from './Math/Vector';
-import { Cube } from './Graphics/Entities/Cube';
+import { Mesh } from './Graphics/Entities/Mesh';
 
 window.addEventListener('load', () => {
   const app = new Application(60, 60);
@@ -18,28 +17,24 @@ window.addEventListener('load', () => {
   let deltaRender;
   let deltaUpdate;
 
-  let parent;
+  let mesh;
 
   app.onStart = () => {
     canvas.fullscreen(true);
 
-    parent = new Cube(
-      new Vector3(0, 0, -1),
+    mesh = new Mesh(
+      new Vector3(0, -5, -35),
       new Vector3(0, 0, 0),
-      new Vector3(0.01, 0.01, 0.01)
+      new Vector3(1, 1, 1),
+      'Obj/male.obj'
     );
-    scene.children.push(parent);
 
-    let last = parent;
-    for (let i = 0; i < 300; i += 1) {
-      const newC = new Cube(
-        new Vector3(0, 2 * Math.pow(0.995, i + 1), 0),
-        new Vector3(5, 3, 5),
-        new Vector3(0.995, 0.995, 0.995)
-      );
-      last.children.push(newC);
-      last = newC;
-    }
+    // cube = new Cube(
+    //  new Vector3(0, 0, -5),
+    //  new Vector3(0, 0, 0),
+    //  new Vector3(1, 1, 1)
+    // );
+    scene.children.push(mesh);
   };
 
   app.onRender = () => {
@@ -52,8 +47,6 @@ window.addEventListener('load', () => {
     for (let i = 0; i < pbr.data.length; i += 1) {
       vertices += pbr.data[i].positions.length / 3;
     }
-
-    const triangles = vertices / 3;
 
     Shader.render();
 
@@ -68,7 +61,6 @@ window.addEventListener('load', () => {
 
     deltaRender = Date.now() - lastRender;
     canvas.context2d.fillText(`vertices: ${vertices.toString()}`, 10, 30);
-    canvas.context2d.fillText(`triangles: ${triangles.toString()}`, 10, 50);
     canvas.context2d.fillText(
       `render time: ${deltaRender.toString()}ms`,
       10,
@@ -84,9 +76,9 @@ window.addEventListener('load', () => {
   app.onUpdate = deltaTime => {
     lastUpdate = Date.now();
 
-    parent.rotation.x += deltaTime * 2;
-    parent.rotation.y += deltaTime * 10;
-    parent.rotation.z += deltaTime * 5;
+    mesh.rotation.x += deltaTime * 2;
+    mesh.rotation.y += deltaTime * 10;
+    mesh.rotation.z += deltaTime * 5;
 
     deltaUpdate = Date.now() - lastUpdate;
   };
