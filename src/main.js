@@ -6,7 +6,7 @@ import { Vector2, Vector3 } from './Math/Vector';
 import { Mesh } from './Graphics/Entities/Mesh';
 
 window.addEventListener('load', () => {
-  const app = new Application(60, 100);
+  const app = new Application(60, 60);
   const canvas = new Canvas('main', new Vector2(500, 500));
   const scene = new Scene();
   Shader.init(canvas);
