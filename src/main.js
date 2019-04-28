@@ -37,6 +37,14 @@ window.addEventListener('load', () => {
       'Obj/male.obj'
     );
     scene.children.push(mesh2);
+
+    const mesh3 = new Mesh(
+      new Vector3(-2, -1, -3),
+      new Vector3(0, 0, 0),
+      new Vector3(0.1, 0.1, 0.1),
+      'Obj/male.obj'
+    );
+    scene.children.push(mesh3);
   };
 
   app.onRender = () => {
@@ -88,7 +96,7 @@ window.addEventListener('load', () => {
   app.onUpdate = deltaTime => {
     lastUpdate = Date.now();
 
-    mesh.rotation.y += deltaTime * 10;
+    mesh.rotation.y += deltaTime * 30;
 
     deltaUpdate = Date.now() - lastUpdate;
   };

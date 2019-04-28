@@ -59,19 +59,23 @@ export class Application {
       this.perfTime = newTime;
     }
 
-    if (deltaUpdate >= this.updateTimeStep)
-      if (this.onUpdate) {
-        this.onUpdate(deltaUpdate);
-        this.updates += 1;
-        this.updateTime += this.updateTimeStep;
-      }
+    if (deltaUpdate >= this.updateTimeStep) {
+      if (this.onUpdate) this.onUpdate(deltaUpdate);
 
-    if (deltaRender >= this.renderTimeStep)
-      if (this.onRender) {
-        this.onRender(deltaRender);
-        this.frames += 1;
-        this.renderTime += this.renderTimeStep;
-      }
+      this.updates += 1;
+      this.updateTime += this.updateTimeStep;
+
+      if (deltaUpdate >= this.updateTimeStep * 2) this.updateTime = newTime;
+    }
+
+    if (deltaRender >= this.renderTimeStep) {
+      if (this.onRender) this.onRender(deltaRender);
+
+      this.frames += 1;
+      this.renderTime += this.renderTimeStep;
+
+      if (deltaRender >= this.renderTimeStep * 2) this.renderTime = newTime;
+    }
 
     window.requestAnimationFrame(() => {
       this.tick();

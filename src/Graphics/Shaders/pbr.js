@@ -18,7 +18,10 @@ const pbrVertex = `
 
 		highp vec3 ambientLight = vec3(0.02, 0.02, 0.02);
 		highp vec3 directionalLightColor = vec3(1.0, 1.0, 1.0);
-		highp vec3 directionalVector = normalize(vec3(0.85, 0.8, 0.75));
+    highp vec3 directionalVector = normalize(vec3(0.85, 0.8, 0.75));
+    
+    mat4 normalMatrix = uModelViewMatrix * mat4(1.0);
+
 		highp vec4 transformedNormal = vec4(aVertexNormal, 1.0);
 		highp float directional = max(dot(transformedNormal.xyz, directionalVector), 0.0);
 		vLighting = ambientLight + (directionalLightColor * directional);
