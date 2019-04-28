@@ -115,6 +115,6 @@ export class Scene {
     for (let i = 0; i < current.children.length; i += 1)
       this.recursive(current.children[i]);
 
-    this.transformStack.pop(3);
+    this.transformStack.pop(5);
   }
 }

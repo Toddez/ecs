@@ -28,13 +28,15 @@ window.addEventListener('load', () => {
       new Vector3(0.1, 0.1, 0.1),
       'Obj/male.obj'
     );
-
-    // cube = new Cube(
-    //  new Vector3(0, 0, -5),
-    //  new Vector3(0, 0, 0),
-    //  new Vector3(1, 1, 1)
-    // );
     scene.children.push(mesh);
+
+    const mesh2 = new Mesh(
+      new Vector3(2, -1, -3),
+      new Vector3(0, 0, 0),
+      new Vector3(0.1, 0.1, 0.1),
+      'Obj/male.obj'
+    );
+    scene.children.push(mesh2);
   };
 
   app.onRender = () => {
