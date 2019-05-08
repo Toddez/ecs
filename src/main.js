@@ -1,9 +1,13 @@
+import { Transform } from './Graphics/Components/Transform';
 import { Application } from './Application/Application';
 import { Canvas } from './Graphics/Canvas';
 import { Scene } from './Graphics/ECS';
 import { Shader } from './Graphics/Shader';
 import { Vector2, Vector3 } from './Math/Vector';
 import { Mesh } from './Graphics/Entities/Mesh';
+import { Cube } from './Graphics/Entities/Cube';
+import { SceneViewer } from './Debug/SceneViewer';
+import { ObjectViewer } from './Debug/ObjectViewer';
 
 window.addEventListener('load', () => {
   const app = new Application(60, 60);
@@ -11,40 +15,53 @@ window.addEventListener('load', () => {
   const scene = new Scene();
   Shader.init(canvas);
 
+  canvas.setMargin(new Vector2(300, 0));
+  const sceneViewer = new SceneViewer(scene, '300px', '50%');
+  const objectViewer = new ObjectViewer('300px', '50%');
+
   let lastRender = Date.now();
   let lastUpdate = Date.now();
 
   let deltaRender;
   let deltaUpdate;
 
-  let mesh;
+  let cube;
 
   app.onStart = () => {
     canvas.fullscreen(true);
 
-    mesh = new Mesh(
-      new Vector3(0, -1, -3),
+    cube = new Cube(
+      new Vector3(0, 0, -5),
       new Vector3(0, 0, 0),
-      new Vector3(0.1, 0.1, 0.1),
-      'Obj/male.obj'
+      new Vector3(1, 1, 1)
     );
-    scene.children.push(mesh);
 
-    const mesh2 = new Mesh(
-      new Vector3(2, -1, -3),
-      new Vector3(0, 0, 0),
-      new Vector3(0.1, 0.1, 0.1),
-      'Obj/male.obj'
-    );
-    scene.children.push(mesh2);
+    scene.children.push(cube);
 
-    const mesh3 = new Mesh(
-      new Vector3(-2, -1, -3),
-      new Vector3(0, 0, 0),
-      new Vector3(0.1, 0.1, 0.1),
-      'Obj/male.obj'
+    cube.children.push(
+      new Cube(
+        new Vector3(0, 0, -5),
+        new Vector3(0, 0, 45),
+        new Vector3(1, 1, 1)
+      )
     );
-    scene.children.push(mesh3);
+
+    cube.children.push(
+      new Cube(
+        new Vector3(0, 2, -5),
+        new Vector3(0, 45, 0),
+        new Vector3(1, 0.2, 1)
+      )
+    );
+
+    scene.children.push(
+      new Mesh(
+        new Vector3(0, -6, -9),
+        new Vector3(0, 25, 0),
+        new Vector3(0.5, 0.5, 0.5),
+        'Obj/male.obj'
+      )
+    );
   };
 
   app.onRender = () => {
@@ -96,7 +113,12 @@ window.addEventListener('load', () => {
   app.onUpdate = deltaTime => {
     lastUpdate = Date.now();
 
-    mesh.rotation.y += deltaTime * 30;
+    cube.rotation.x += deltaTime * 10;
+    cube.rotation.y += deltaTime * 30;
+    cube.rotation.z += deltaTime * 50;
+
+    sceneViewer.populate();
+    objectViewer.populate(sceneViewer.selected);
 
     deltaUpdate = Date.now() - lastUpdate;
   };
