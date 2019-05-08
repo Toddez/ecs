@@ -1,3 +1,5 @@
+import { Component } from '../Graphics/ECS';
+
 export class ObjectViewer {
   constructor(width, height) {
     const element = document.createElement('div');
@@ -8,6 +10,7 @@ export class ObjectViewer {
     element.style.right = '0';
     element.style.bottom = '0';
     element.style.marginLeft = '5px';
+    element.style.overflowY = 'auto';
     document.body.append(element);
 
     this.current = null;
@@ -42,9 +45,17 @@ export class ObjectViewer {
       for (let i = 0; i < keys.length; i += 1) {
         const old = this.current;
 
-        if (this.current == null)
-          this.addElement(this.element, keys[i], values[i]);
-        else this.addElement(this.current, keys[i], values[i]);
+        const key =
+          values[i] instanceof Component
+            ? `component_${values[i].uniqueID}`
+            : keys[i];
+        const value =
+          Object.keys(values[i]).length > 0
+            ? values[i].constructor.name
+            : values[i];
+
+        if (this.current == null) this.addElement(this.element, key, value);
+        else this.addElement(this.current, key, value);
 
         if (Object.keys(values[i]).length > 0) this.add(values[i]);
 

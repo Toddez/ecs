@@ -10,6 +10,7 @@ export class SceneViewer {
     element.style.position = 'absolute';
     element.style.right = '0';
     element.style.marginLeft = '5px';
+    element.style.overflowY = 'auto';
     document.body.append(element);
 
     document.querySelector('body').addEventListener('click', event => {

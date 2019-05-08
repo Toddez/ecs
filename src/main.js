@@ -35,7 +35,6 @@ window.addEventListener('load', () => {
       new Vector3(0, 0, 0),
       new Vector3(1, 1, 1)
     );
-
     scene.children.push(cube);
 
     cube.children.push(
@@ -62,6 +61,25 @@ window.addEventListener('load', () => {
         'Obj/male.obj'
       )
     );
+
+    let last = new Cube(
+      new Vector3(3, -6, -8),
+      new Vector3(0, 0, 0),
+      new Vector3(0.7, 0.7, 0.7)
+    );
+    scene.children.push(last);
+
+    for (let i = 0; i < 15; i += 1) {
+      const newLast = new Cube(
+        new Vector3(0, 2, 0),
+        new Vector3(0, 5, 2),
+        new Vector3(0.9, 0.9, 0.9)
+      );
+
+      last.children.push(newLast);
+
+      last = newLast;
+    }
   };
 
   app.onRender = () => {
