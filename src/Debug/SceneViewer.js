@@ -1,4 +1,5 @@
-import { Scene, Entity } from '../Graphics/ECS';
+import { Scene } from '../Graphics/Scene';
+import { Entity } from '../Graphics/Entity';
 
 export class SceneViewer {
   constructor(scene, width, height) {

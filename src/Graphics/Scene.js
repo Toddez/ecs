@@ -1,77 +1,7 @@
-import { Matrix4 } from '../Math/Matrix';
+import { Identity } from './Identity';
+import { TransformStack } from './TransformStack';
 import { Vector3 } from '../Math/Vector';
-import { Transform } from './Components/Transform';
-
-class Identity {
-  static getUniqueID() {
-    if (!Identity.currentID) Identity.currentID = 0;
-    return (Identity.currentID += 1);
-  }
-}
-export class Entity {
-  constructor(position, rotation, scale, shader) {
-    this.uniqueID = Identity.getUniqueID();
-    this.components = [];
-    this.children = [];
-
-    this.components.push(
-      new Transform(
-        position || new Vector3(0, 0, 0),
-        rotation || new Vector3(0, 0, 0),
-        scale || new Vector3(1, 1, 1)
-      )
-    );
-
-    this.position = position || new Vector3(0, 0, 0);
-    this.rotation = rotation || new Vector3(0, 0, 0);
-    this.scale = scale || new Vector3(1, 1, 1);
-
-    this.shader = shader;
-
-    this.shaderData = { positions: [0], indices: [0] };
-  }
-
-  getEntity(id) {
-    if (id === this.uniqueID) return this;
-    for (let i = 0; i < this.children.length; i += 1) {
-      if (this.children[i].getEntity(id) != null)
-        return this.children[i].getEntity(id);
-    }
-  }
-}
-
-export class Component {
-  constructor() {
-    this.uniqueID = Identity.getUniqueID();
-  }
-}
-
-class TransformStack {
-  constructor() {
-    this.matrices = [];
-  }
-
-  push(m) {
-    if (!m) return;
-    this.matrices.push(m);
-  }
-
-  pop(n) {
-    const count = n || 1;
-    for (let i = 0; i < count; i += 1) {
-      this.matrices.pop();
-    }
-  }
-
-  eval() {
-    let value = Matrix4.identity();
-    for (let i = 0; i < this.matrices.length; i += 1) {
-      value = Matrix4.multiply(value, this.matrices[i]);
-    }
-
-    return value;
-  }
-}
+import { Matrix4 } from '../Math/Matrix';
 
 export class Scene {
   constructor() {
@@ -87,6 +17,12 @@ export class Scene {
     }
 
     return null;
+  }
+
+  update() {
+    for (let i = 0; i < this.children.length; i += 1) {
+      this.children[i].update();
+    }
   }
 
   render() {

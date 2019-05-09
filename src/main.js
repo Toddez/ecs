@@ -1,10 +1,8 @@
-import { Transform } from './Graphics/Components/Transform';
 import { Application } from './Application/Application';
 import { Canvas } from './Graphics/Canvas';
-import { Scene } from './Graphics/ECS';
+import { Scene } from './Graphics/Scene';
 import { Shader } from './Graphics/Shader';
 import { Vector2, Vector3 } from './Math/Vector';
-import { Mesh } from './Graphics/Entities/Mesh';
 import { Cube } from './Graphics/Entities/Cube';
 import { SceneViewer } from './Debug/SceneViewer';
 import { ObjectViewer } from './Debug/ObjectViewer';
@@ -26,6 +24,8 @@ window.addEventListener('load', () => {
   let deltaUpdate;
 
   let cube;
+  let cube2;
+  let dir = 1;
 
   app.onStart = () => {
     canvas.fullscreen(true);
@@ -53,27 +53,19 @@ window.addEventListener('load', () => {
       )
     );
 
-    scene.children.push(
-      new Mesh(
-        new Vector3(0, -6, -9),
-        new Vector3(0, 25, 0),
-        new Vector3(0.5, 0.5, 0.5),
-        'Obj/male.obj'
-      )
-    );
-
-    let last = new Cube(
+    cube2 = new Cube(
       new Vector3(3, -6, -8),
       new Vector3(0, 0, 0),
       new Vector3(0.7, 0.7, 0.7)
     );
-    scene.children.push(last);
+    scene.children.push(cube2);
 
-    for (let i = 0; i < 15; i += 1) {
+    let last = cube2;
+    for (let i = 0; i < 25; i += 1) {
       const newLast = new Cube(
-        new Vector3(0, 2, 0),
-        new Vector3(0, 5, 2),
-        new Vector3(0.9, 0.9, 0.9)
+        new Vector3(0, 2 * 0.95 ** i, 0),
+        new Vector3(0, 3, 2),
+        new Vector3(0.95, 0.95, 0.95)
       );
 
       last.children.push(newLast);
@@ -133,10 +125,31 @@ window.addEventListener('load', () => {
 
     cube.rotation.x += deltaTime * 10;
     cube.rotation.y += deltaTime * 30;
-    cube.rotation.z += deltaTime * 50;
+    cube.rotation.z -= deltaTime * 50;
+
+    if (cube2.scale.x > 1.5) {
+      cube2.scale.x = 1.5;
+      cube2.scale.y = 1.5;
+      cube2.scale.z = 1.5;
+      dir = -1;
+    }
+    if (cube2.scale.x < 0.5) {
+      cube2.scale.x = 0.5;
+      cube2.scale.y = 0.5;
+      cube2.scale.z = 0.5;
+      dir = 1;
+    }
+
+    cube2.scale.x += deltaTime * dir * 0.2;
+    cube2.scale.y += deltaTime * dir * 0.2;
+    cube2.scale.z += deltaTime * dir * 0.2;
+
+    cube2.rotation.y -= deltaTime * 10;
 
     sceneViewer.populate();
     objectViewer.populate(sceneViewer.selected);
+
+    scene.update();
 
     deltaUpdate = Date.now() - lastUpdate;
   };

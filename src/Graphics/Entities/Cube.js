@@ -1,4 +1,4 @@
-import { Entity } from '../ECS';
+import { Entity } from '../Entity';
 import { Shader } from '../Shader';
 import {} from '../Shaders/PBR';
 

@@ -1,4 +1,4 @@
-import { Component } from '../Graphics/ECS';
+import { Component } from '../Graphics/Component';
 
 export class ObjectViewer {
   constructor(width, height) {
