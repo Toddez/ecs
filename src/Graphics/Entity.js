@@ -35,6 +35,14 @@ export class Entity {
     }
   }
 
+  getComponent(componentType) {
+    for (let i = 0; i < this.components.length; i += 1)
+      if (this.components[i] instanceof componentType)
+        return this.components[i];
+
+    return null;
+  }
+
   getEntity(id) {
     if (id === this.uniqueID) return this;
     for (let i = 0; i < this.children.length; i += 1) {

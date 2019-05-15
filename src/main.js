@@ -6,6 +6,7 @@ import { Vector2, Vector3 } from './Math/Vector';
 import { Cube } from './Graphics/Entities/Cube';
 import { SceneViewer } from './Debug/SceneViewer';
 import { ObjectViewer } from './Debug/ObjectViewer';
+import { Script } from './Graphics/Components/Script';
 
 window.addEventListener('load', () => {
   const app = new Application(60, 60);
@@ -35,6 +36,7 @@ window.addEventListener('load', () => {
       new Vector3(0, 0, 0),
       new Vector3(1, 1, 1)
     );
+    cube.components.push(new Script('Scripts/Test.js'));
     scene.children.push(cube);
 
     cube.children.push(

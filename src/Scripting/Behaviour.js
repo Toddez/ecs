@@ -1,0 +1,5 @@
+class Behaviour {
+  OnStart() {}
+
+  OnUpdate() {}
+}

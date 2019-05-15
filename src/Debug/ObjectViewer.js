@@ -50,15 +50,19 @@ export class ObjectViewer {
             ? `component_${values[i].uniqueID}`
             : keys[i];
         const value =
-          Object.keys(values[i]).length > 0
+          Object.keys(values[i]).length > 0 &&
+          values[i].constructor.name !== 'String'
             ? values[i].constructor.name
             : values[i];
 
         if (this.current == null) this.addElement(this.element, key, value);
         else this.addElement(this.current, key, value);
 
-        if (Object.keys(values[i]).length > 0) this.add(values[i]);
-
+        if (
+          values[i].constructor.name !== 'String' &&
+          Object.keys(values[i]).length > 0
+        )
+          this.add(values[i]);
         this.current = old;
       }
     }
