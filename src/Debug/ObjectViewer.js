@@ -1,4 +1,5 @@
 import { Component } from '../Graphics/Component';
+import { Entity } from '../Graphics/Entity';
 
 export class ObjectViewer {
   constructor(width, height) {
@@ -24,11 +25,15 @@ export class ObjectViewer {
 
   populate(entity) {
     this.clear();
+
     if (entity != null) {
-      if (entity.components.length > 0) {
-        this.limit = 50;
-        this.add(entity.components);
-      }
+      this.addElement(this.element, entity.constructor.name, entity.uniqueID);
+
+      if (entity instanceof Entity)
+        if (entity.components.length > 0) {
+          this.limit = 50;
+          this.add(entity.components);
+        }
     }
   }
 
@@ -46,20 +51,23 @@ export class ObjectViewer {
         const old = this.current;
 
         const key =
-          values[i] instanceof Component
-            ? `component_${values[i].uniqueID}`
-            : keys[i];
-        const value =
+          values[i] instanceof Component ? values[i].uniqueID : keys[i];
+        let value =
           Object.keys(values[i]).length > 0 &&
           values[i].constructor.name !== 'String'
             ? values[i].constructor.name
             : values[i];
+
+        if (values[i] instanceof Entity) {
+          value = `${values[i].constructor.name} entity_${values[i].uniqueID}`;
+        }
 
         if (this.current == null) this.addElement(this.element, key, value);
         else this.addElement(this.current, key, value);
 
         if (
           values[i].constructor.name !== 'String' &&
+          !(values[i] instanceof Entity) &&
           Object.keys(values[i]).length > 0
         )
           this.add(values[i]);
@@ -70,7 +78,7 @@ export class ObjectViewer {
 
   addElement(parent, key, value) {
     const element = document.createElement('div');
-    element.style.marginLeft = '10px';
+    if (parent !== this.element) element.style.marginLeft = '10px';
     element.innerHTML = `${key}: ${value}`;
 
     this.current = element;

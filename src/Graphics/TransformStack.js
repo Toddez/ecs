@@ -3,6 +3,8 @@ import { Matrix4 } from '../Math/Matrix';
 export class TransformStack {
   constructor() {
     this.matrices = [];
+    this.start = 0;
+    this.value = null;
   }
 
   push(m) {
@@ -15,14 +17,18 @@ export class TransformStack {
     for (let i = 0; i < count; i += 1) {
       this.matrices.pop();
     }
+
+    this.start = 0;
   }
 
   eval() {
-    let value = Matrix4.identity();
-    for (let i = 0; i < this.matrices.length; i += 1) {
-      value = Matrix4.multiply(value, this.matrices[i]);
+    if (this.start === 0) this.value = Matrix4.identity();
+    for (let i = this.start; i < this.matrices.length; i += 1) {
+      this.value = Matrix4.multiply(this.value, this.matrices[i]);
     }
 
-    return value;
+    this.start = this.matrices.length;
+
+    return this.value;
   }
 }

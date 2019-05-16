@@ -5,7 +5,11 @@ export class Component {
     this.uniqueID = Identity.getUniqueID();
   }
 
-  update() {
-    console.log(`Update not implemented for ${this.constructor.name}`);
+  update(deltaTime) {
+    console.log(
+      `Update not implemented for ${
+        this.constructor.name
+      } deltaTime: ${deltaTime}`
+    );
   }
 }

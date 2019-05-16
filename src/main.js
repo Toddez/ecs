@@ -4,6 +4,7 @@ import { Scene } from './Graphics/Scene';
 import { Shader } from './Graphics/Shader';
 import { Vector2, Vector3 } from './Math/Vector';
 import { Cube } from './Graphics/Entities/Cube';
+import { Mesh } from './Graphics/Entities/Mesh';
 import { SceneViewer } from './Debug/SceneViewer';
 import { ObjectViewer } from './Debug/ObjectViewer';
 import { Script } from './Graphics/Components/Script';
@@ -24,22 +25,27 @@ window.addEventListener('load', () => {
   let deltaRender;
   let deltaUpdate;
 
-  let cube;
-  let cube2;
-  let dir = 1;
-
   app.onStart = () => {
     canvas.fullscreen(true);
 
-    cube = new Cube(
-      new Vector3(0, 0, -5),
+    scene.addEntity(
+      new Mesh(
+        new Vector3(0, -5, -7),
+        new Vector3(0, 45, 0),
+        new Vector3(0.4, 0.4, 0.4),
+        'Obj/male.obj'
+      )
+    );
+
+    const cube = new Cube(
+      new Vector3(0, -3, -5),
       new Vector3(0, 0, 0),
       new Vector3(1, 1, 1)
     );
-    cube.components.push(new Script('Scripts/Test.js'));
-    scene.children.push(cube);
+    cube.addComponent(new Script('Scripts/Test.js'));
+    scene.addEntity(cube);
 
-    cube.children.push(
+    cube.addEntity(
       new Cube(
         new Vector3(0, 0, -5),
         new Vector3(0, 0, 45),
@@ -47,7 +53,7 @@ window.addEventListener('load', () => {
       )
     );
 
-    cube.children.push(
+    cube.addEntity(
       new Cube(
         new Vector3(0, 2, -5),
         new Vector3(0, 45, 0),
@@ -55,12 +61,12 @@ window.addEventListener('load', () => {
       )
     );
 
-    cube2 = new Cube(
+    const cube2 = new Cube(
       new Vector3(3, -6, -8),
       new Vector3(0, 0, 0),
       new Vector3(0.7, 0.7, 0.7)
     );
-    scene.children.push(cube2);
+    scene.addEntity(cube2);
 
     let last = cube2;
     for (let i = 0; i < 25; i += 1) {
@@ -70,7 +76,7 @@ window.addEventListener('load', () => {
         new Vector3(0.95, 0.95, 0.95)
       );
 
-      last.children.push(newLast);
+      last.addEntity(newLast);
 
       last = newLast;
     }
@@ -125,33 +131,10 @@ window.addEventListener('load', () => {
   app.onUpdate = deltaTime => {
     lastUpdate = Date.now();
 
-    cube.rotation.x += deltaTime * 10;
-    cube.rotation.y += deltaTime * 30;
-    cube.rotation.z -= deltaTime * 50;
-
-    if (cube2.scale.x > 1.5) {
-      cube2.scale.x = 1.5;
-      cube2.scale.y = 1.5;
-      cube2.scale.z = 1.5;
-      dir = -1;
-    }
-    if (cube2.scale.x < 0.5) {
-      cube2.scale.x = 0.5;
-      cube2.scale.y = 0.5;
-      cube2.scale.z = 0.5;
-      dir = 1;
-    }
-
-    cube2.scale.x += deltaTime * dir * 0.2;
-    cube2.scale.y += deltaTime * dir * 0.2;
-    cube2.scale.z += deltaTime * dir * 0.2;
-
-    cube2.rotation.y -= deltaTime * 10;
-
     sceneViewer.populate();
     objectViewer.populate(sceneViewer.selected);
 
-    scene.update();
+    scene.update(deltaTime);
 
     deltaUpdate = Date.now() - lastUpdate;
   };

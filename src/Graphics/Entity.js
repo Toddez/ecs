@@ -25,22 +25,37 @@ export class Entity {
     this.shaderData = { positions: [0], indices: [0] };
   }
 
-  update() {
+  update(deltaTime) {
     for (let i = 0; i < this.children.length; i += 1) {
-      this.children[i].update();
+      this.children[i].update(deltaTime);
     }
 
     for (let i = 0; i < this.components.length; i += 1) {
-      this.components[i].update();
+      this.components[i].update(deltaTime);
     }
+  }
+
+  addComponent(component) {
+    component.object = this;
+    if (this.getComponent(component.constructor.name) == null)
+      this.components.push(component);
   }
 
   getComponent(componentType) {
     for (let i = 0; i < this.components.length; i += 1)
-      if (this.components[i] instanceof componentType)
+      if (
+        (componentType instanceof Object &&
+          this.components[i] instanceof componentType) ||
+        this.components[i].constructor.name === componentType
+      )
         return this.components[i];
 
     return null;
+  }
+
+  addEntity(entity) {
+    this.children.push(entity);
+    entity.parent = this;
   }
 
   getEntity(id) {

@@ -14,10 +14,13 @@ export class SceneViewer {
     element.style.overflowY = 'auto';
     document.body.append(element);
 
-    document.querySelector('body').addEventListener('click', event => {
+    document.querySelector('body').addEventListener('mousedown', event => {
       event.preventDefault();
 
-      if (event.target.class === 'entity') {
+      if (
+        event.target.classList.contains('entity') ||
+        event.target.classList.contains('scene')
+      ) {
         const entity = scene.getEntity(parseInt(event.target.id.split('_')[1]));
 
         if (entity != null) this.selected = entity;
@@ -46,11 +49,11 @@ export class SceneViewer {
     if (entity instanceof Scene) {
       element.innerHTML = `scene_${entity.uniqueID}`;
       element.id = `scene_${entity.uniqueID}`;
-      element.class = 'scene';
+      element.classList.add('scene');
     } else if (entity instanceof Entity) {
       element.innerHTML = `entity_${entity.uniqueID}`;
       element.id = `entity_${entity.uniqueID}`;
-      element.class = 'entity';
+      element.classList.add('entity');
     }
 
     if (this.current == null) this.element.append(element);

@@ -10,7 +10,14 @@ export class Scene {
     this.children = [];
   }
 
+  addEntity(entity) {
+    this.children.push(entity);
+    entity.parent = this;
+  }
+
   getEntity(id) {
+    if (this.uniqueID === id) return this;
+
     for (let i = 0; i < this.children.length; i += 1) {
       if (this.children[i].getEntity(id) != null)
         return this.children[i].getEntity(id);
@@ -19,9 +26,9 @@ export class Scene {
     return null;
   }
 
-  update() {
+  update(deltaTime) {
     for (let i = 0; i < this.children.length; i += 1) {
-      this.children[i].update();
+      this.children[i].update(deltaTime);
     }
   }
 
