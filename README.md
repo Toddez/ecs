@@ -10,6 +10,6 @@
 
 ## Workspace
 1. run `webpack --watch` in one terminal
-2. run `nodemon` in another terminal (install with npm install -g nodemon)
+2. run `nodemon` in another terminal (install with `npm install -g nodemon`)
 
-it will now automatically rebuild javascript modules and restart server on file changes
+it will now automatically recompile javascript and restart server on file changes
