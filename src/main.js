@@ -14,7 +14,7 @@ import { Light } from './Graphics/Components/Light';
 import { Identity } from './Graphics/Identity';
 
 window.addEventListener('load', () => {
-  const app = new Application(60, 60);
+  const app = new Application(60, 30);
   const canvas = new Canvas('main', new Vector2(500, 500));
   const scene = new Scene();
   Shader.init(canvas);

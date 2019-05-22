@@ -48,7 +48,7 @@ export class Application {
   tick() {
     const newTime = new Date().getTime() / 1000;
     let deltaUpdate = newTime - this.updateTime;
-    const deltaRender = newTime - this.renderTime;
+    let deltaRender = newTime - this.renderTime;
 
     if (newTime - this.perfTime >= 1) {
       this.fps = this.frames / (newTime - this.perfTime);
@@ -68,11 +68,13 @@ export class Application {
       deltaUpdate -= this.updateTimeStep;
     }
 
-    if (deltaRender >= this.renderTimeStep) {
-      if (this.onRender) this.onRender(deltaRender);
+    while (deltaRender >= this.renderTimeStep) {
+      if (this.onRender) this.onRender(Math.min(this.renderTimeStep, deltaRender));
 
       this.frames += 1;
-      this.renderTime = newTime;
+      this.renderTime += this.renderTimeStep;
+      
+      deltaRender -= this.renderTimeStep;
     }
 
     window.requestAnimationFrame(() => {
