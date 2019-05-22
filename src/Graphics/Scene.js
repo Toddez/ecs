@@ -5,8 +5,9 @@ import { Matrix4 } from '../Math/Matrix';
 
 export class Scene {
   constructor() {
-    this.uniqueID = Identity.getUniqueID();
+    this.uniqueID = Identity.getUniqueID(this);
     this.transformStack = new TransformStack();
+    this.rotationStack = new TransformStack();
     this.children = [];
   }
 
@@ -34,6 +35,7 @@ export class Scene {
 
   render() {
     this.transformStack = new TransformStack();
+    this.rotationStack = new TransformStack();
     for (let i = 0; i < this.children.length; i += 1)
       this.recursive(this.children[i]);
   }
@@ -50,6 +52,16 @@ export class Scene {
       Matrix4.rotation(current.rotation.z, new Vector3(0, 0, 1))
     );
     this.transformStack.push(Matrix4.scaling(current.scale));
+
+    this.rotationStack.push(
+      Matrix4.rotation(current.rotation.x, new Vector3(1, 0, 0))
+    );
+    this.rotationStack.push(
+      Matrix4.rotation(current.rotation.y, new Vector3(0, 1, 0))
+    );
+    this.rotationStack.push(
+      Matrix4.rotation(current.rotation.z, new Vector3(0, 0, 1))
+    );
 
     if (current.shader) {
       const matrix = this.transformStack.eval();
@@ -89,17 +101,53 @@ export class Scene {
         newPositions.push(value);
       }
 
+      const rotMatrix = this.rotationStack.eval();
+      const newNormals = [];
+      for (let i = 0; i < current.shaderData.positions.length; i += 1) {
+        let value = 0;
+        if (i % 3 === 0) {
+          value = Matrix4.multiplyVector(
+            rotMatrix,
+            new Vector3(
+              current.shaderData.vertexNormals[i],
+              current.shaderData.vertexNormals[i + 1],
+              current.shaderData.vertexNormals[i + 2]
+            )
+          ).x;
+        } else if (i % 3 === 1) {
+          value = Matrix4.multiplyVector(
+            rotMatrix,
+            new Vector3(
+              current.shaderData.vertexNormals[i - 1],
+              current.shaderData.vertexNormals[i],
+              current.shaderData.vertexNormals[i + 1]
+            )
+          ).y;
+        } else {
+          value = Matrix4.multiplyVector(
+            rotMatrix,
+            new Vector3(
+              current.shaderData.vertexNormals[i - 2],
+              current.shaderData.vertexNormals[i - 1],
+              current.shaderData.vertexNormals[i]
+            )
+          ).z;
+        }
+
+        newNormals.push(value);
+      }
+
       let data = {};
       data = Object.assign(data, current.shaderData);
       data.positions = newPositions;
+      data.vertexNormals = newNormals;
 
       current.shader.data.push(data);
-    } else {
-      console.warn('No shader defined for entity');
     }
     for (let i = 0; i < current.children.length; i += 1)
       this.recursive(current.children[i]);
 
     this.transformStack.pop(5);
+    this.rotationStack.pop(3);
   }
 }

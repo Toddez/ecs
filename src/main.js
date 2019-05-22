@@ -3,17 +3,22 @@ import { Canvas } from './Graphics/Canvas';
 import { Scene } from './Graphics/Scene';
 import { Shader } from './Graphics/Shader';
 import { Vector2, Vector3 } from './Math/Vector';
-import { Cube } from './Graphics/Entities/Cube';
 import { Mesh } from './Graphics/Entities/Mesh';
+import { Cube } from './Graphics/Entities/Cube';
+import { Entity } from './Graphics/Entity';
 import { SceneViewer } from './Debug/SceneViewer';
 import { ObjectViewer } from './Debug/ObjectViewer';
 import { Script } from './Graphics/Components/Script';
+import { Camera } from './Graphics/Components/Camera';
+import { Light } from './Graphics/Components/Light';
+import { Identity } from './Graphics/Identity';
 
 window.addEventListener('load', () => {
   const app = new Application(60, 60);
   const canvas = new Canvas('main', new Vector2(500, 500));
   const scene = new Scene();
   Shader.init(canvas);
+  Script.init(Identity, Canvas);
 
   canvas.setMargin(new Vector2(300, 0));
   const sceneViewer = new SceneViewer(scene, '300px', '50%');
@@ -28,58 +33,40 @@ window.addEventListener('load', () => {
   app.onStart = () => {
     canvas.fullscreen(true);
 
-    scene.addEntity(
-      new Mesh(
-        new Vector3(0, -5, -7),
-        new Vector3(0, 45, 0),
-        new Vector3(0.4, 0.4, 0.4),
-        'Obj/male.obj'
-      )
-    );
+    const camera = new Entity(new Vector3(0, 1, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0), Shader.getShader('pbr'));
+    camera.addComponent(new Camera());
+    camera.addComponent(new Script('Scripts/CamMovement.js'));
+    scene.addEntity(camera);
 
-    const cube = new Cube(
-      new Vector3(0, -3, -5),
+    scene.addEntity(new Cube(
+      new Vector3(0, -2, 0),
+      new Vector3(0, 0, 0),
+      new Vector3(5, 1, 5)
+    ));
+
+    const light = new Entity(
+      new Vector3(3, 5, 3),
       new Vector3(0, 0, 0),
       new Vector3(1, 1, 1)
     );
+    light.addComponent(new Light(new Vector3(0, 1, 0), 1));
+    scene.addEntity(light);
+
+    const light2 = new Entity(
+      new Vector3(-3, 5, -3),
+      new Vector3(0, 0, 0),
+      new Vector3(0, 0, 0)
+    );
+    light2.addComponent(new Light(new Vector3(1, 0, 0), 1));
+    scene.addEntity(light2);
+
+    const cube = new Cube(
+      new Vector3(0, 0, 0),
+      new Vector3(0, 0, 0),
+      new Vector3(0.2, 0.2, 0.2)
+    );
     cube.addComponent(new Script('Scripts/Test.js'));
     scene.addEntity(cube);
-
-    cube.addEntity(
-      new Cube(
-        new Vector3(0, 0, -5),
-        new Vector3(0, 0, 45),
-        new Vector3(1, 1, 1)
-      )
-    );
-
-    cube.addEntity(
-      new Cube(
-        new Vector3(0, 2, -5),
-        new Vector3(0, 45, 0),
-        new Vector3(1, 0.2, 1)
-      )
-    );
-
-    const cube2 = new Cube(
-      new Vector3(3, -6, -8),
-      new Vector3(0, 0, 0),
-      new Vector3(0.7, 0.7, 0.7)
-    );
-    scene.addEntity(cube2);
-
-    let last = cube2;
-    for (let i = 0; i < 25; i += 1) {
-      const newLast = new Cube(
-        new Vector3(0, 2 * 0.95 ** i, 0),
-        new Vector3(0, 3, 2),
-        new Vector3(0.95, 0.95, 0.95)
-      );
-
-      last.addEntity(newLast);
-
-      last = newLast;
-    }
   };
 
   app.onRender = () => {
@@ -131,10 +118,10 @@ window.addEventListener('load', () => {
   app.onUpdate = deltaTime => {
     lastUpdate = Date.now();
 
+    scene.update(deltaTime);
+
     sceneViewer.populate();
     objectViewer.populate(sceneViewer.selected);
-
-    scene.update(deltaTime);
 
     deltaUpdate = Date.now() - lastUpdate;
   };

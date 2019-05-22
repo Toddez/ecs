@@ -1,4 +1,7 @@
 import { Component } from '../Component';
+import { Vector3 } from '../../Math/Vector';
+
+const LIB_VECTOR3 = Vector3;
 
 const behaviour = `
 class Behaviour {
@@ -27,6 +30,11 @@ export class Script extends Component {
     this.getSourceCode(src);
   }
 
+  static init(Identity, Canvas) {
+    Script.Identity = Identity;
+    Script.Canvas = Canvas;
+  }
+
   async getSourceCode(path) {
     let file = await loadFile(path);
 
@@ -43,18 +51,22 @@ export class Script extends Component {
       }
     }
 
-    eval(`${behaviour + file}this.obj = new ${this.name}();`);
-    this.obj.object = this.object;
-    if (this.obj) this.initialized = true;
+    eval(`${behaviour + file}this.reference = new ${this.name}();`);
+    if (this.reference) { 
+      this.initialized = true;
+      this.reference.object = this.object;
+      this.reference.Identity = Script.Identity;
+      this.reference.Canvas = Script.Canvas;
+    }
   }
 
   update(deltaTime) {
     if (!this.initialized) return;
-    if (!this.obj) return;
+    if (!this.reference) return;
 
     if (this.first) {
-      this.obj.OnStart();
+      this.reference.OnStart();
       this.first = false;
-    } else this.obj.OnUpdate(deltaTime);
+    } else this.reference.OnUpdate(deltaTime);
   }
 }

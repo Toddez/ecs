@@ -12,6 +12,7 @@ export class ObjectViewer {
     element.style.bottom = '0';
     element.style.marginLeft = '5px';
     element.style.overflowY = 'auto';
+    element.contentEditable = true;
     document.body.append(element);
 
     this.current = null;
@@ -49,6 +50,9 @@ export class ObjectViewer {
 
       for (let i = 0; i < keys.length; i += 1) {
         const old = this.current;
+        
+        if (values[i] == null || values[i] == undefined)
+          continue;
 
         const key =
           values[i] instanceof Component ? values[i].uniqueID : keys[i];
@@ -80,6 +84,8 @@ export class ObjectViewer {
     const element = document.createElement('div');
     if (parent !== this.element) element.style.marginLeft = '10px';
     element.innerHTML = `${key}: ${value}`;
+    element.contentEditable = true;
+
 
     this.current = element;
 

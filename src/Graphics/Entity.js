@@ -4,7 +4,7 @@ import { Identity } from './Identity';
 
 export class Entity {
   constructor(position, rotation, scale, shader) {
-    this.uniqueID = Identity.getUniqueID();
+    this.uniqueID = Identity.getUniqueID(this);
     this.components = [];
     this.children = [];
 
@@ -22,7 +22,7 @@ export class Entity {
 
     this.shader = shader;
 
-    this.shaderData = { positions: [0], indices: [0] };
+    this.shaderData = { positions: [], indices: [] };
   }
 
   update(deltaTime) {

@@ -27,6 +27,8 @@ export class Shader {
     if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
       console.error('Vertex shader error', gl.getShaderInfoLog(vertexShader));
       gl.deleteShader(vertexShader);
+      console.log(this.vertex);
+      
       return null;
     }
 
@@ -91,7 +93,7 @@ export class Shader {
     for (const shader of Shader.shaderStack) {
       if (!shader.compiled) shader.compile(gl);
 
-      if (shader.render) shader.render(gl, shader.program, shader.data);
+      if (shader.render) shader.render(shader, gl, shader.program, shader.data);
       else console.warn('No render method defined for shader');
 
       shader.data = [];

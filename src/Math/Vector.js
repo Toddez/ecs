@@ -1,3 +1,5 @@
+import { Matrix4 } from "./Matrix";
+
 export class Vector2 {
   constructor(x, y) {
     this.x = x;
@@ -16,6 +18,10 @@ export class Vector3 {
     this.x = x;
     this.y = y;
     this.z = z;
+  }
+
+  static cross(a, b) {    
+    return new Vector3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
   }
 }
 
