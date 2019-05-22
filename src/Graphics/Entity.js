@@ -1,6 +1,8 @@
 import { Transform } from './Components/Transform';
 import { Vector3 } from '../Math/Vector';
+import { Matrix4 } from '../Math/Matrix';
 import { Identity } from './Identity';
+import { TransformStack } from './TransformStack';
 
 export class Entity {
   constructor(position, rotation, scale, shader) {
@@ -64,5 +66,21 @@ export class Entity {
       if (this.children[i].getEntity(id) != null)
         return this.children[i].getEntity(id);
     }
+  }
+
+  getWorldPosition() {
+    let stack = new TransformStack();
+    let current = this;
+    while (current.parent !== null && current.parent !== undefined && current.parent instanceof Entity) {
+      const transform = current.parent.getComponent('Transform');
+      stack.pushEnd(Matrix4.translation(transform.position));
+      stack.pushEnd(Matrix4.rotation(transform.rotation.x, new Vector3(1, 0, 0)));
+      stack.pushEnd(Matrix4.rotation(transform.rotation.y, new Vector3(0, 1, 0)));
+      stack.pushEnd(Matrix4.rotation(transform.rotation.z, new Vector3(0, 0, 1)));
+      stack.pushEnd(Matrix4.scaling(transform.scale));
+      current = current.parent;
+    }
+
+    return Matrix4.multiplyVector(stack.eval(), this.getComponent('Transform').position);
   }
 }

@@ -44,29 +44,29 @@ window.addEventListener('load', () => {
       new Vector3(5, 1, 5)
     ));
 
+    const cube = new Cube(
+      new Vector3(0, 0, 0),
+      new Vector3(0, 0, 0),
+      new Vector3(1, 1, 1)
+    );
+    cube.addComponent(new Script('Scripts/Test.js'));
+    scene.addEntity(cube);
+
     const light = new Entity(
-      new Vector3(3, 5, 3),
+      new Vector3(5, 0, 0),
       new Vector3(0, 0, 0),
       new Vector3(1, 1, 1)
     );
     light.addComponent(new Light(new Vector3(0, 1, 0), 1));
-    scene.addEntity(light);
+    cube.addEntity(light);
 
     const light2 = new Entity(
-      new Vector3(-3, 5, -3),
+      new Vector3(-5, 0, 0),
       new Vector3(0, 0, 0),
-      new Vector3(0, 0, 0)
+      new Vector3(1, 1, 1)
     );
     light2.addComponent(new Light(new Vector3(1, 0, 0), 1));
-    scene.addEntity(light2);
-
-    const cube = new Cube(
-      new Vector3(0, 0, 0),
-      new Vector3(0, 0, 0),
-      new Vector3(0.2, 0.2, 0.2)
-    );
-    cube.addComponent(new Script('Scripts/Test.js'));
-    scene.addEntity(cube);
+    cube.addEntity(light2);
   };
 
   app.onRender = () => {

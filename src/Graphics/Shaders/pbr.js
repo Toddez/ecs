@@ -86,7 +86,7 @@ Shader.create('pbr', pbrVertex, pbrFragment, function(self, gl, program, data) {
   let vFuncs = '';
   for (let i = 0; i < lights.length; i++) {
     const light = lights[i];
-    const pos = light.object.getComponent('Transform').position;
+    const pos = light.object.getWorldPosition();
   
     vFuncs += `vLight${i} = light(vec3(${sanitize(pos.x)}, ${sanitize(pos.y)}, ${sanitize(pos.z)}));`;
   }
@@ -94,7 +94,7 @@ Shader.create('pbr', pbrVertex, pbrFragment, function(self, gl, program, data) {
   let fFuncs = '';
   for (let i = 0; i < lights.length; i++) {
     const light = lights[i];
-    const pos = light.object.getComponent('Transform').position;
+    const pos = light.object.getWorldPosition();
     
     const color = light.color;
     const intensity = light.intensity;

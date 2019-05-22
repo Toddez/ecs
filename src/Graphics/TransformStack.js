@@ -12,6 +12,11 @@ export class TransformStack {
     this.matrices.push(m);
   }
 
+  pushEnd(m) {
+    if (!m) return;
+    this.matrices.unshift(m);
+  }
+
   pop(n) {
     const count = n || 1;
     for (let i = 0; i < count; i += 1) {
