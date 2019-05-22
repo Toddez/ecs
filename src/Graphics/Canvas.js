@@ -57,7 +57,7 @@ export class Canvas {
    */
   setupWebGL() {
     // Grab WebGL context
-    this.gl = this.canvasGl.getContext('webgl2', { antialias: false });
+    this.gl = this.canvasGl.getContext('webgl2', { antialias: true });
     const ext = this.gl.getExtension('EXT_color_buffer_float');
   }
 
