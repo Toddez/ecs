@@ -12,6 +12,7 @@ body {
   font-size: 12px;
   background-color: #222223;
   outline: none;
+  cursor: default;
 }
 
 canvas {

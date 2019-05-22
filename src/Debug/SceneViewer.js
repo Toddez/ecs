@@ -45,6 +45,7 @@ export class SceneViewer {
   add(entity) {
     const element = document.createElement('div');
     element.style.marginLeft = '10px';
+    element.style.cursor = 'pointer';
 
     if (entity instanceof Scene) {
       element.innerHTML = `scene_${entity.uniqueID}`;

@@ -33,7 +33,7 @@ window.addEventListener('load', () => {
   app.onStart = () => {
     canvas.fullscreen(true);
 
-    const camera = new Entity(new Vector3(0, 1, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0), Shader.getShader('pbr'));
+    const camera = new Entity(new Vector3(0, 1, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0));
     camera.addComponent(new Camera());
     camera.addComponent(new Script('Scripts/CamMovement.js'));
     scene.addEntity(camera);
@@ -44,16 +44,17 @@ window.addEventListener('load', () => {
       new Vector3(5, 1, 5)
     ));
 
-    const cube = new Cube(
+    const cube = new Mesh(
+      new Vector3(0, -1, 0),
       new Vector3(0, 0, 0),
-      new Vector3(0, 0, 0),
-      new Vector3(1, 1, 1)
+      new Vector3(0.2, 0.2, 0.2),
+      'Obj/male.obj'
     );
     cube.addComponent(new Script('Scripts/RotateYaw.js'));
     scene.addEntity(cube);
 
     const light = new Entity(
-      new Vector3(5, 0, 0),
+      new Vector3(20, 5, 0),
       new Vector3(0, 0, 0),
       new Vector3(1, 1, 1)
     );
@@ -61,7 +62,7 @@ window.addEventListener('load', () => {
     cube.addEntity(light);
 
     const light2 = new Entity(
-      new Vector3(-5, 0, 0),
+      new Vector3(-20, 5, 0),
       new Vector3(0, 0, 0),
       new Vector3(1, 1, 1)
     );
@@ -69,11 +70,11 @@ window.addEventListener('load', () => {
     cube.addEntity(light2);
 
     const light3 = new Entity(
-      new Vector3(0, 5, 0),
+      new Vector3(0, 10, 0),
       new Vector3(0, 0, 0),
       new Vector3(1, 1, 1)
     );
-    light3.addComponent(new Light(new Vector3(0, 0, 1), 0.1));
+    light3.addComponent(new Light(new Vector3(0, 0, 1), 0.2));
     scene.addEntity(light3);
   };
 
