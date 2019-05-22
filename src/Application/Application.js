@@ -60,6 +60,12 @@ export class Application {
     }
 
     while (deltaUpdate >= this.updateTimeStep) {
+      if (deltaUpdate >= 10) {
+        if (this.onUpdate) this.onUpdate(deltaUpdate);
+        this.updateTime += deltaUpdate;
+        break;
+      }
+  
       if (this.onUpdate) this.onUpdate(Math.min(this.updateTimeStep, deltaUpdate));
 
       this.updates += 1;
@@ -69,6 +75,12 @@ export class Application {
     }
 
     while (deltaRender >= this.renderTimeStep) {
+      if (deltaRender >= 10) {
+        if (this.onRender) this.onUpdate(deltaRender);
+        this.renderTime += deltaRender;
+        break;
+      }
+
       if (this.onRender) this.onRender(Math.min(this.renderTimeStep, deltaRender));
 
       this.frames += 1;

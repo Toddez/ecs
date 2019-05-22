@@ -67,6 +67,14 @@ window.addEventListener('load', () => {
     );
     light2.addComponent(new Light(new Vector3(1, 0, 0), 1));
     cube.addEntity(light2);
+
+    const light3 = new Entity(
+      new Vector3(0, 5, 0),
+      new Vector3(0, 0, 0),
+      new Vector3(1, 1, 1)
+    );
+    light3.addComponent(new Light(new Vector3(0, 0, 1), 0.1));
+    scene.addEntity(light3);
   };
 
   app.onRender = () => {
