@@ -1,4 +1,4 @@
-class Test extends Behaviour {
+class RotateYaw extends Behaviour {
   OnStart() {
     this.transform = this.object.getComponent('Transform');
   }

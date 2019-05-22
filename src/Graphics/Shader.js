@@ -27,7 +27,6 @@ export class Shader {
     if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
       console.error('Vertex shader error', gl.getShaderInfoLog(vertexShader));
       gl.deleteShader(vertexShader);
-      console.log(this.vertex);
       
       return null;
     }

@@ -47,34 +47,32 @@ export class Application {
    */
   tick() {
     const newTime = new Date().getTime() / 1000;
-    const deltaUpdate = newTime - this.updateTime;
+    let deltaUpdate = newTime - this.updateTime;
     const deltaRender = newTime - this.renderTime;
 
     if (newTime - this.perfTime >= 1) {
       this.fps = this.frames / (newTime - this.perfTime);
       this.ups = this.updates / (newTime - this.perfTime);
-
+      
       this.frames = 0;
       this.updates = 0;
       this.perfTime = newTime;
     }
 
-    if (deltaUpdate >= this.updateTimeStep) {
-      if (this.onUpdate) this.onUpdate(deltaUpdate);
+    while (deltaUpdate >= this.updateTimeStep) {
+      if (this.onUpdate) this.onUpdate(Math.min(this.updateTimeStep, deltaUpdate));
 
       this.updates += 1;
       this.updateTime += this.updateTimeStep;
 
-      if (deltaUpdate >= this.updateTimeStep * 2) this.updateTime = newTime;
+      deltaUpdate -= this.updateTimeStep;
     }
 
     if (deltaRender >= this.renderTimeStep) {
       if (this.onRender) this.onRender(deltaRender);
 
       this.frames += 1;
-      this.renderTime += this.renderTimeStep;
-
-      if (deltaRender >= this.renderTimeStep * 2) this.renderTime = newTime;
+      this.renderTime = newTime;
     }
 
     window.requestAnimationFrame(() => {

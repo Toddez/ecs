@@ -51,7 +51,7 @@ export class ObjectViewer {
       for (let i = 0; i < keys.length; i += 1) {
         const old = this.current;
         
-        if (values[i] == null || values[i] == undefined)
+        if (values[i] == null || values[i] == undefined || keys[i] == 'reference' || keys[i] == 'object' || keys[i] == 'first')
           continue;
 
         const key =

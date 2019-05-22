@@ -1,8 +1,9 @@
 class CamMovement extends Behaviour {
 	OnStart() {
-	  this.transform = this.object.getComponent('Transform');
-	  this.down = false;
-	  this.distance = 5;
+		this.cam = this.object.getComponent('Camera');
+		this.transform = this.object.getComponent('Transform');
+		this.down = false;
+		this.distance = 5;
 	}
   
 	OnUpdate(deltaTime) {		
@@ -23,7 +24,12 @@ class CamMovement extends Behaviour {
 			this.down = false;
 		}
 		
-		this.distance += this.Canvas.scrollDelta().y * 0.01;
+		{
+			const delta = this.Canvas.scrollDelta();
+			this.distance += delta.y * 0.01;
+			this.cam.fov += delta.x * 0.01;
+			this.cam.fov = Math.min(Math.max(1, this.cam.fov), 179);
+		}
 
 		this.transform.position.x = Math.sin(this.transform.rotation.y * Math.PI / 180) * Math.cos(-this.transform.rotation.x * Math.PI / 180) * this.distance;
 		this.transform.position.y = Math.sin(-this.transform.rotation.x * Math.PI / 180) * this.distance;

@@ -49,7 +49,7 @@ window.addEventListener('load', () => {
       new Vector3(0, 0, 0),
       new Vector3(1, 1, 1)
     );
-    cube.addComponent(new Script('Scripts/Test.js'));
+    cube.addComponent(new Script('Scripts/RotateYaw.js'));
     scene.addEntity(cube);
 
     const light = new Entity(
