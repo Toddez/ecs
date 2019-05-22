@@ -51,6 +51,9 @@ function sanitize(string) {
   let current = false;
   let start, length = 0;
   for (let i = 0; i < string.length; i++) {
+    if (string[i] === 'e')
+      return '0.0';
+    
     if (numbers.includes(string[i])) {
       if (current == false) {
         start = i;
