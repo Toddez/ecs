@@ -4,6 +4,6 @@ class RotateYaw extends Behaviour {
   }
 
   OnUpdate(deltaTime) {
-    this.transform.rotation.y -= deltaTime * 5;
+    this.transform.rotation.y -= deltaTime * 20;
   }
 }
