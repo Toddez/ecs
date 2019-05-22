@@ -50,7 +50,7 @@ const pbrFragment = `
   void main(void) {
     highp vec3 light = vec3(0.0, 0.0, 0.0) ;// FLIGHT0
     highp vec3 specular = vec3(0.0, 0.0, 0.0) ;// FLIGHT1
-    gl_FragColor = vec4(vec3(1.0, 1.0, 1.0).xyz * light, 1.0);
+    gl_FragColor = vec4(light + specular, 1.0);
 	}
 `;
 
@@ -108,6 +108,7 @@ Shader.create('pbr', pbrVertex, pbrFragment, function(self, gl, program, data) {
   }
 
   let fFuncs = '';
+  let fFuncsSpec = '';
   for (let i = 0; i < lights.length; i++) {
     const light = lights[i];
     const pos = light.object.getWorldPosition();
@@ -115,10 +116,11 @@ Shader.create('pbr', pbrVertex, pbrFragment, function(self, gl, program, data) {
     const color = light.color;
     const intensity = light.intensity;
     fFuncs += `+ light(vLight${i}, vec3(${sanitize(color.x)}, ${sanitize(color.y)}, ${sanitize(color.z)}), ${sanitize(intensity)})`;
-    fFuncs += `+ specular(vLight${i}, vViewLight${i}, vec3(${sanitize(color.x)}, ${sanitize(color.y)}, ${sanitize(color.z)}), 200.0)`;
+    fFuncsSpec += `+ specular(vLight${i}, vViewLight${i}, vec3(${sanitize(color.x)}, ${sanitize(color.y)}, ${sanitize(color.z)}), 200.0)`;
   }
 
-  fFuncs += `;`
+  fFuncs += `;`;
+  fFuncsSpec += ';';
   
   let vertex = pbrVertex;
   vertex = vertex.replace('// VLIGHT', varyings);
@@ -128,6 +130,8 @@ Shader.create('pbr', pbrVertex, pbrFragment, function(self, gl, program, data) {
   let fragment = pbrFragment;
   fragment = fragment.replace('// VLIGHT', varyings);
   fragment = fragment.replace(';// FLIGHT0', fFuncs);
+  fragment = fragment.replace(';// FLIGHT1', fFuncsSpec);
+
   self.fragment = fragment;
     
   self.compile(gl);
