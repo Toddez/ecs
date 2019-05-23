@@ -44,38 +44,22 @@ window.addEventListener('load', () => {
       new Vector3(5, 1, 5)
     ));
 
-    const cube = new Mesh(
+    const mesh = new Mesh(
       new Vector3(0, -1, 0),
       new Vector3(0, 0, 0),
       new Vector3(0.2, 0.2, 0.2),
       'Obj/male.obj'
     );
-    cube.addComponent(new Script('Scripts/RotateYaw.js'));
-    scene.addEntity(cube);
+    mesh.addComponent(new Script('Scripts/RotateYaw.js'));
+    scene.addEntity(mesh);
 
     const light = new Entity(
-      new Vector3(20, 5, 0),
+      new Vector3(3, 3, 3),
       new Vector3(0, 0, 0),
       new Vector3(1, 1, 1)
     );
-    light.addComponent(new Light(new Vector3(0, 1, 0), 1));
-    cube.addEntity(light);
-
-    const light2 = new Entity(
-      new Vector3(-20, 5, 0),
-      new Vector3(0, 0, 0),
-      new Vector3(1, 1, 1)
-    );
-    light2.addComponent(new Light(new Vector3(1, 0, 0), 1));
-    cube.addEntity(light2);
-
-    const light3 = new Entity(
-      new Vector3(0, 10, 0),
-      new Vector3(0, 0, 0),
-      new Vector3(1, 1, 1)
-    );
-    light3.addComponent(new Light(new Vector3(0, 0, 1), 0.2));
-    scene.addEntity(light3);
+    light.addComponent(new Light(new Vector3(1, 1, 1), 0.5));
+    scene.addEntity(light);
   };
 
   app.onRender = () => {
